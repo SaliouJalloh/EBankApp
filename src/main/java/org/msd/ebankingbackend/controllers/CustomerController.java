@@ -24,32 +24,32 @@ import lombok.RequiredArgsConstructor;
 public class CustomerController {
 	
 	private final CustomerService customerService;
-    private static final String ID = "/{id}";
+    private static final String ID = "/{customerId}";
 	
 	@PostMapping
 	public ResponseEntity<CustomerDto> createCustomer(@RequestBody CustomerDto customerDto){
-		return new ResponseEntity<>(customerService.saveCustomer(customerDto), HttpStatus.CREATED);
+		return new ResponseEntity<>(customerService.save(customerDto), HttpStatus.CREATED);
 	}
 	
     @GetMapping
     public ResponseEntity<List<CustomerDto>> getCustomers(){
-        return new ResponseEntity<>(customerService.findAllCustomers(), HttpStatus.OK);
+        return new ResponseEntity<>(customerService.findAll(), HttpStatus.OK);
     }
     
     @GetMapping(ID)
-    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable(name = "id") Long customerId) throws CustomerNotFoundException {
-    	return ResponseEntity.ok(customerService.findCustomerById(customerId));
+    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long customerId) throws CustomerNotFoundException {
+    	return ResponseEntity.ok(customerService.findById(customerId));
     }
 
     @PutMapping(ID)
-    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto){
-        customerDto.setId(id);
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDto customerDto){
+        customerDto.setId(customerId);
         return new ResponseEntity<>(customerService.updateCustomer(customerDto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id){
-        customerService.deleteCustomer(id);
+    @DeleteMapping(ID)
+    public void deleteCustomer(@PathVariable Long customerId){
+        customerService.delete(customerId);
     }
 
     /*@GetMapping("/search")

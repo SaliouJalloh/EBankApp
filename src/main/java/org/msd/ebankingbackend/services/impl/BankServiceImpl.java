@@ -36,9 +36,7 @@ public class BankServiceImpl implements BankService {
 			} else if (bankAccount instanceof SavingAccount) {
 				System.out.println("Rate=>" + ((SavingAccount) bankAccount).getInterestRate());
 			}
-			bankAccount.getOperations().forEach(op -> {
-				System.out.println(op.getType() + "\t" + op.getOperationDate() + "\t" + op.getAmount());
-			});
+			bankAccount.getOperations().forEach(op -> System.out.println(op.getType() + "\t" + op.getOperationDate() + "\t" + op.getAmount()));
 		}
 	}
 }

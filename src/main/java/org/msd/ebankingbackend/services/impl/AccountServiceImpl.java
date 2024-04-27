@@ -2,9 +2,9 @@ package org.msd.ebankingbackend.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.msd.ebankingbackend.dtos.AccountDto;
-import org.msd.ebankingbackend.dtos.AccountHistoryDto;
-import org.msd.ebankingbackend.dtos.OperationDto;
+import org.iban4j.CountryCode;
+import org.iban4j.Iban;
+import org.msd.ebankingbackend.dtos.*;
 import org.msd.ebankingbackend.entities.*;
 import org.msd.ebankingbackend.enums.AccountStatus;
 import org.msd.ebankingbackend.enums.OperationType;
@@ -12,6 +12,7 @@ import org.msd.ebankingbackend.exception.AccountNotFoundException;
 import org.msd.ebankingbackend.exception.BalanceNotSufficientException;
 import org.msd.ebankingbackend.exception.CustomerNotFoundException;
 import org.msd.ebankingbackend.mappers.AccountMapper;
+import org.msd.ebankingbackend.mappers.CustomerMapper;
 import org.msd.ebankingbackend.mappers.OperationMapper;
 import org.msd.ebankingbackend.repositories.AccountRepository;
 import org.msd.ebankingbackend.repositories.CustomerRepository;
@@ -36,67 +37,120 @@ public class AccountServiceImpl implements AccountService{
 	private final CustomerRepository customerRepository;
 	private final OperationRepository operationRepository;
 	private final AccountMapper accountMapper;
+	private final CustomerMapper customerMapper;
     private final EntityValidatorService<AccountDto> validator;
 
 	@Override
-    public List<AccountDto> findAllAccounts(){
-        List<Account> accounts = accountRepository.findAll();
-        return accounts.stream().map(account -> {
-            if (account instanceof SavingAccount savingAccount) {
-                return accountMapper.fromSavingAccount(savingAccount);
-            } else {
-                CurrentAccount currentAccount = (CurrentAccount) account;
-                return accountMapper.fromCurrentAccount(currentAccount);
-            }
-        }).collect(Collectors.toList());
-    }
+	public AccountDto save(AccountDto dto) {
+		validator.validateInput(dto);
+		if (dto instanceof CurrentAccountDto currentAccountDto) {
+			CurrentAccount currentAccount = accountMapper.fromCurrentAccountDto(currentAccountDto);
+			CurrentAccount savedAccount = accountRepository.save(currentAccount);
+			// generate random IBAN when creating new account else do not update the IBAN
+			if (dto.getId() == null) {
+				savedAccount.setIban(generateRandomIban());
+			}
+			return accountMapper.fromCurrentAccount(savedAccount);
+		} else {
+			SavingAccount savingAccount = accountMapper.fromSavingAccountDto((SavingAccountDto) dto);
+			SavingAccount savedAccount = accountRepository.save(savingAccount);
+			// generate random IBAN when creating new account else do not update the IBAN
+			if (dto.getId() == null) {
+				savedAccount.setIban(generateRandomIban());
+			}
+			return accountMapper.fromSavingAccount(savedAccount);
+		}
+	}
+
 	@Override
-	public AccountDto findAccountById(Long accountId) throws AccountNotFoundException {
+	public List<AccountDto> findAll() {
+		List<Account> accounts = accountRepository.findAll();
+		return accounts.stream().map(account -> {
+			if (account instanceof SavingAccount savingAccount) {
+				return accountMapper.fromSavingAccount(savingAccount);
+			} else {
+				CurrentAccount currentAccount = (CurrentAccount) account;
+				return accountMapper.fromCurrentAccount(currentAccount);
+			}
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public AccountDto findById(Long accountId) {
 		log.info("return a account");
 		Account account = accountRepository.findById(accountId)
 				.orElseThrow(()-> new AccountNotFoundException("BankAccount not found"));
+
 		if(account instanceof SavingAccount savingAccount){
-            return accountMapper.fromSavingAccount(savingAccount);
+			return accountMapper.fromSavingAccount(savingAccount);
 		} else {
 			CurrentAccount currentAccount = (CurrentAccount) account;
 			return accountMapper.fromCurrentAccount(currentAccount);
 		}
 	}
 
-	private static void initializeAccount(double initialBalance, Account account, Customer customer) throws CustomerNotFoundException {
-		if(customer == null) {
+	@Override
+	public AccountDto updateAccount(AccountDto accountDto) {
+		log.info("Account Updated");
+		Account account = accountRepository.findById(accountDto.getId())
+				.orElseThrow(()-> new AccountNotFoundException("BankAccount not found"));
+
+		if(account instanceof CurrentAccount currentAccount){
+			accountMapper.fromCurrentAccount(currentAccount);
+			CurrentAccount savedAccount = accountRepository.save(currentAccount);
+			return accountMapper.fromCurrentAccount(savedAccount);
+		} else {
+			SavingAccount savingAccount = (SavingAccount) account;
+			accountMapper.fromSavingAccount(savingAccount);
+			SavingAccount savedAccount = accountRepository.save(savingAccount);
+			return accountMapper.fromSavingAccount(savedAccount);
+		}
+	}
+
+	@Override
+	public void delete(Long id) {
+		// todo check delete
+		accountRepository.deleteById(id);
+	}
+
+	private void initializeAccount(double initialBalance, AccountDto accountDto, CustomerDto customerDto) throws CustomerNotFoundException {
+		if(customerDto == null) {
 			throw new CustomerNotFoundException("Customer not found");
 		}
-		account.setCreatedAt(LocalDateTime.now());
-		account.setBalance(initialBalance);
-		account.setCustomer(customer);
-		account.setCurrency("USD");
-		account.setStatus(AccountStatus.CREATED);
+		accountDto.setCreatedAt(LocalDateTime.now());
+		accountDto.setBalance(initialBalance);
+		accountDto.setCustomerDto(customerDto);
+		accountDto.setCurrency("EUR");
+		accountDto.setStatus(AccountStatus.CREATED);
+		// generate random IBAN when creating new account else do not update the IBAN
+		if(accountDto.getId() == null) {
+			accountDto.setIban(generateRandomIban());
+		}
 	}
 
 	@Override
 	public void saveCurrentAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException {
-		log.info("Current_account saved");
 		Customer customer = customerRepository.findById(customerId).orElse(null);
-		CurrentAccount currentAccount = new CurrentAccount();
-		initializeAccount(initialBalance, currentAccount, customer);
-		currentAccount.setOverDraft(overDraft);
-		CurrentAccount savedCurrentAccount = accountRepository.save(currentAccount);
+		CurrentAccountDto currentAccountDto = new CurrentAccountDto();
+		initializeAccount(initialBalance, currentAccountDto, customerMapper.fromCustomer(customer));
+		currentAccountDto.setOverDraft(overDraft);
+		CurrentAccount savedCurrentAccount = accountRepository.save(accountMapper.fromCurrentAccountDto(currentAccountDto));
 		accountMapper.fromCurrentAccount(savedCurrentAccount);
+		log.info("Current_account saved");
 	}
 
 	@Override
 	public void saveSavingAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException {
-		log.info("Saving_account saved");
 		Customer customer = customerRepository.findById(customerId).orElse(null);
-		SavingAccount savingAccount = new SavingAccount();
-		initializeAccount(initialBalance, savingAccount,customer);
-		savingAccount.setInterestRate(interestRate);
-		SavingAccount savedAccount = accountRepository.save(savingAccount);
+		SavingAccountDto savingAccountDto = new SavingAccountDto();
+		initializeAccount(initialBalance, savingAccountDto, customerMapper.fromCustomer(customer));
+		savingAccountDto.setInterestRate(interestRate);
+		SavingAccount savedAccount = accountRepository.save(accountMapper.fromSavingAccountDto(savingAccountDto));
 		accountMapper.fromSavingAccount(savedAccount);
+		log.info("Saving_account saved");
 	}
 
-	private static Operation initializeOperations(OperationType debit, double amount, String description, Account account) {
+	private Operation initializeOperations(OperationType debit, double amount, String description, Account account) {
 		Operation operation = new Operation();
 		operation.setCreatedAt(LocalDateTime.now());
 		operation.setOperationDate(LocalDateTime.now());
@@ -161,6 +215,19 @@ public class AccountServiceImpl implements AccountService{
 		accountHistoryDto.setPageSize(size);
 		accountHistoryDto.setTotalPages(operations.getTotalPages());
 		return accountHistoryDto;
+	}
+
+	private String generateRandomIban(){
+		// generate an iban
+		String iban = Iban.random(CountryCode.FR).toFormattedString();
+		// check if the iban already exists
+		boolean ibanExists = accountRepository.findByIban(iban).isPresent();
+		// if exists -> generate new random iban
+		if(ibanExists){
+			generateRandomIban();
+		}
+		// if not exist -> return generated iban
+		return iban;
 	}
 
 	//	@Override

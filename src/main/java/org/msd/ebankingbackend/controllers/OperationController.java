@@ -27,13 +27,13 @@ public class OperationController {
     }
 
     @GetMapping(ID)
-    public ResponseEntity<OperationDto> findById(@PathVariable("transaction-id") Long transactionId, @PathVariable String operationId) {
-        return ResponseEntity.ok(service.findById(transactionId));
+    public ResponseEntity<OperationDto> findById(@PathVariable Long operationId) {
+        return ResponseEntity.ok(service.findById(operationId));
     }
 
-    @DeleteMapping("/{transaction-id}")
-    public ResponseEntity<Void> delete(@PathVariable("transaction-id") Long transactionId) {
-        service.delete(transactionId);
+    @DeleteMapping(ID)
+    public ResponseEntity<Void> delete(@PathVariable Long operationId) {
+        service.delete(operationId);
         return ResponseEntity.accepted().build();
     }
 }

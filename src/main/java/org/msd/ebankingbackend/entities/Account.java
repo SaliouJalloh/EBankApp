@@ -16,7 +16,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "TYPE")
 @Table(name = "accounts")
 @Entity
-public abstract class Account extends AbstractEntity {
+public class Account extends AbstractEntity {
 
     private String iban;
 

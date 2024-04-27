@@ -4,16 +4,15 @@ import java.util.List;
 
 import org.msd.ebankingbackend.dtos.AccountDto;
 import org.msd.ebankingbackend.dtos.AccountHistoryDto;
+import org.msd.ebankingbackend.dtos.CustomerDto;
 import org.msd.ebankingbackend.dtos.OperationDto;
 import org.msd.ebankingbackend.exception.AccountNotFoundException;
 import org.msd.ebankingbackend.exception.BalanceNotSufficientException;
 import org.msd.ebankingbackend.exception.CustomerNotFoundException;
 
-public interface AccountService {
+public interface AccountService extends AbstractService<AccountDto> {
 
-    List<AccountDto> findAllAccounts();
-
-    AccountDto findAccountById(Long accountId) throws AccountNotFoundException;
+    AccountDto updateAccount(AccountDto accountDto);
 
     void saveCurrentAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException;
 

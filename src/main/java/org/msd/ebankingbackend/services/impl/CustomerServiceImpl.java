@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
 	private final EntityValidatorService<CustomerDto> validator;
 
 	@Override
-	public CustomerDto saveCustomer(CustomerDto customerDto) {
+	public CustomerDto save(CustomerDto customerDto) {
 		log.info("Customer saved");
 		validator.validateInput(customerDto);
 		Customer customer = customerMapper.fromCustomerDto(customerDto);
@@ -37,24 +37,23 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public List<CustomerDto> findAllCustomers() {
+	public List<CustomerDto> findAll() {
 		List<Customer> customers = customerRepository.findAll();
-        return customers.stream()
+		return customers.stream()
 				.map(customerMapper::fromCustomer)
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public CustomerDto findCustomerById(Long id) throws CustomerNotFoundException {
+	public CustomerDto findById(Long id) {
 		Customer customer = customerRepository.findById(id).orElseThrow(()-> new CustomerNotFoundException("Customer not found"));
 		return customerMapper.fromCustomer(customer);
 	}
 
-	/*@Override
-	public List<CustomerDto> searchCustomers(Long keyword) {
-		List<Customer> customers = customerRepository.searchCustomer(keyword);
-        return customers.stream().map(customerMapper::fromCustomer).collect(Collectors.toList());
-	}*/
+	@Override
+	public void delete(Long customerId) {
+		customerRepository.deleteById(customerId);
+	}
 
 	@Override
 	public CustomerDto updateCustomer(CustomerDto customerDto) {
@@ -63,8 +62,10 @@ public class CustomerServiceImpl implements CustomerService {
 		Customer savedCustomer = customerRepository.save(customer);
 		return customerMapper.fromCustomer(savedCustomer);
 	}
-	@Override
-	public void deleteCustomer(Long customerId){
-		customerRepository.deleteById(customerId);
-	}
+
+	/*@Override
+	public List<CustomerDto> searchCustomers(Long keyword) {
+		List<Customer> customers = customerRepository.searchCustomer(keyword);
+        return customers.stream().map(customerMapper::fromCustomer).collect(Collectors.toList());
+	}*/
 }

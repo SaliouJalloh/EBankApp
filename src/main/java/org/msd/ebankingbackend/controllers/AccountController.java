@@ -5,6 +5,7 @@ import org.msd.ebankingbackend.dtos.*;
 import org.msd.ebankingbackend.exception.AccountNotFoundException;
 import org.msd.ebankingbackend.exception.BalanceNotSufficientException;
 import org.msd.ebankingbackend.services.AccountService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +19,25 @@ public class AccountController {
     private final AccountService accountService;
     private static final String ID = "/{accountId}";
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<AccountDto>> getAccounts() {
-        return ResponseEntity.ok(accountService.findAllAccounts());
+        return ResponseEntity.ok(accountService.findAll());
     }
 
     @GetMapping(ID)
-    public ResponseEntity<AccountDto> getAccount(@PathVariable Long accountId) throws AccountNotFoundException {
-        return ResponseEntity.ok(accountService.findAccountById(accountId));
+    public ResponseEntity<AccountDto> getAccountByID(@PathVariable Long accountId) throws AccountNotFoundException {
+        return ResponseEntity.ok(accountService.findById(accountId));
+    }
+
+    @PutMapping(ID)
+    public ResponseEntity<AccountDto> updateCustomer(@PathVariable Long accountId, @RequestBody AccountDto accountDto){
+        accountDto.setId(accountId);
+        return new ResponseEntity<>(accountService.updateAccount(accountDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping(ID)
+    public void deleteCustomer(@PathVariable Long accountId){
+        accountService.delete(accountId);
     }
 
     @PostMapping("/debit")

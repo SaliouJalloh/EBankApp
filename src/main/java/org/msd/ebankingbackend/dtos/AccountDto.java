@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter
 @SuperBuilder
 @NoArgsConstructor @AllArgsConstructor
-public abstract class AccountDto extends AbstractEntityDto{
+public class AccountDto extends AbstractEntityDto{
 
 	private String type;
 	private String iban;

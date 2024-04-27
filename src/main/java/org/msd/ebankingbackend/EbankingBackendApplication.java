@@ -36,10 +36,10 @@ public class EbankingBackendApplication {
                 CustomerDto customerDto = new CustomerDto();
                 customerDto.setFirstName(name);
                 customerDto.setEmail(name + "@gmail.com");
-                customerService.saveCustomer(customerDto);
+                customerService.save(customerDto);
             });
             // Pour chaque client, on lui crée les 2 types de comptes
-            customerService.findAllCustomers().forEach(customer -> {
+            customerService.findAll().forEach(customer -> {
                 try {
                     accountService.saveCurrentAccount(Math.random() * 90000, 9000, customer.getId());
                     accountService.saveSavingAccount(Math.random() * 120000, 5.5, customer.getId());
@@ -48,7 +48,7 @@ public class EbankingBackendApplication {
                     e.toString();
                 }
             });
-            List<AccountDto> accounts = accountService.findAllAccounts();
+            List<AccountDto> accounts = accountService.findAll();
             // Creation de 10 operations (credit ou debit) pour chaque compte (CA|SA)
             for (AccountDto account : accounts) {
                 for (int i = 0; i < 10; i++) {
@@ -64,57 +64,4 @@ public class EbankingBackendApplication {
             }
         };
     }
-
-    //@Bean
-/*    CommandLineRunner start(CustomerRepository customerRepository, AccountRepository accountRepository, OperationRepository operationRepository) {
-
-        return args -> {
-            // Ajout de clients
-            Stream.of("Hassan", "Yassine", "Aicha").forEach(name -> {
-                Customer customer = new Customer();
-                customer.setFirstName(name);
-                customer.setEmail(name + "@gmail.com");
-                customerRepository.save(customer);
-            });
-
-            // Creation de compte courant pour chaque clients
-            customerRepository.findAll().forEach(cust -> {
-                CurrentAccount currentAccount = new CurrentAccount();
-                //currentAccount.setId(UUID.randomUUID().toString());
-                currentAccount.setBalance(Math.random() * 90000);
-                currentAccount.setCreatedAt(LocalDate.now());
-                currentAccount.setStatus(AccountStatus.CREATED);
-                currentAccount.setCustomer(cust);
-                currentAccount.setOverDraft(9000);
-                currentAccount.setCurrency("USD");
-                accountRepository.save(currentAccount);
-
-                // Creation de compte epargne pour chaque clients
-                SavingAccount savingAccount = new SavingAccount();
-                //savingAccount.setId(UUID.randomUUID().toString());
-                savingAccount.setBalance(Math.random() * 90000);
-                savingAccount.setCreatedAt(LocalDate.now());
-                savingAccount.setStatus(AccountStatus.CREATED);
-                savingAccount.setCustomer(cust);
-                savingAccount.setInterestRate(5.5);
-                savingAccount.setCurrency("USD");
-                accountRepository.save(savingAccount);
-
-            });
-            // Creation de 10 operation (credit ou debit) pour chaque compte
-            accountRepository.findAll().forEach(acc -> {
-                for (int i = 0; i < 10; i++) {
-                    Operation accountOperation = new Operation();
-                    accountOperation.setOperationDate(LocalDateTime.now());
-                    accountOperation.setAmount(Math.random() * 12000);
-                    accountOperation.setType(Math.random() > 0.5 ? OperationType.DEBIT : OperationType.CREDIT);
-                    accountOperation.setAccount(acc);
-                    operationRepository.save(accountOperation);
-                }
-
-            });
-        };
-
-    }*/
-
 }
