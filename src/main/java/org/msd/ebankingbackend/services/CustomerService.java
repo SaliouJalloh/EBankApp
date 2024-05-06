@@ -5,4 +5,7 @@ import org.msd.ebankingbackend.dtos.CustomerDto;
 public interface CustomerService extends AbstractService<CustomerDto> {
 		//List<CustomerDto> searchCustomers(Long keyword);
 	CustomerDto updateCustomer(CustomerDto customerDto);
+	Integer validateAccount(Long id);
+
+	Integer invalidateAccount(Long id);
 }

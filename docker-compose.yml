@@ -1,32 +1,33 @@
 version: '3.9'
 
 services:
-  #new service (java_app)
-  java_app:
-    container_name: java_app
-    image: ebank/java_app:1.0.0
-    build: .
-    ports:
-      - 8085:8085
-    environment:
-      - DATABASE_URL=jdbc:postgresql://java_db:5432/ebank #jdbc:postgresql://localhost:5432/E_BANK
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=passroot
-    depends_on:
-      - java_db
 
   #old service (postgres)
-  java_db:
-    container_name: java_db
-    image: postgres:16
+  db:
+    container_name: app_db
+    image: postgres:16-alpine
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: passroot
       POSTGRES_DB: ebank
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
+  #new service (java_app)
+  app:
+    container_name: app_main
+    image: bank/app_main:1.0.0
+    build: .
+    ports:
+      - "8085:8085"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ebank
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: passroot
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
 volumes:
-  pgdata: {}
+  postgres-data: {}

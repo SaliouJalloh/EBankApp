@@ -2,8 +2,8 @@ package org.msd.ebankingbackend.controllers;
 
 import java.util.List;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.msd.ebankingbackend.dtos.CustomerDto;
-import org.msd.ebankingbackend.exception.CustomerNotFoundException;
 import org.msd.ebankingbackend.services.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class CustomerController {
     }
     
     @GetMapping(ID)
-    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long customerId) throws CustomerNotFoundException {
+    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable Long customerId) throws EntityNotFoundException {
     	return ResponseEntity.ok(customerService.findById(customerId));
     }
 

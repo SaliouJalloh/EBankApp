@@ -1,5 +1,6 @@
 package org.msd.ebankingbackend.services.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iban4j.CountryCode;
@@ -10,7 +11,6 @@ import org.msd.ebankingbackend.enums.AccountStatus;
 import org.msd.ebankingbackend.enums.OperationType;
 import org.msd.ebankingbackend.exception.AccountNotFoundException;
 import org.msd.ebankingbackend.exception.BalanceNotSufficientException;
-import org.msd.ebankingbackend.exception.CustomerNotFoundException;
 import org.msd.ebankingbackend.mappers.AccountMapper;
 import org.msd.ebankingbackend.mappers.CustomerMapper;
 import org.msd.ebankingbackend.mappers.OperationMapper;
@@ -113,9 +113,9 @@ public class AccountServiceImpl implements AccountService{
 		accountRepository.deleteById(id);
 	}
 
-	private void initializeAccount(double initialBalance, AccountDto accountDto, CustomerDto customerDto) throws CustomerNotFoundException {
+	private void initializeAccount(double initialBalance, AccountDto accountDto, CustomerDto customerDto) throws EntityNotFoundException {
 		if(customerDto == null) {
-			throw new CustomerNotFoundException("Customer not found");
+			throw new EntityNotFoundException("Customer not found");
 		}
 		accountDto.setCreatedAt(LocalDateTime.now());
 		accountDto.setBalance(initialBalance);
@@ -129,7 +129,7 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void saveCurrentAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException {
+	public void saveCurrentAccount(double initialBalance, double overDraft, Long customerId) throws EntityNotFoundException {
 		Customer customer = customerRepository.findById(customerId).orElse(null);
 		CurrentAccountDto currentAccountDto = new CurrentAccountDto();
 		initializeAccount(initialBalance, currentAccountDto, customerMapper.fromCustomer(customer));
@@ -140,7 +140,7 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void saveSavingAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException {
+	public void saveSavingAccount(double initialBalance, double interestRate, Long customerId) throws EntityNotFoundException {
 		Customer customer = customerRepository.findById(customerId).orElse(null);
 		SavingAccountDto savingAccountDto = new SavingAccountDto();
 		initializeAccount(initialBalance, savingAccountDto, customerMapper.fromCustomer(customer));

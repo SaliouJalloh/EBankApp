@@ -1,10 +1,10 @@
 package org.msd.ebankingbackend;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.msd.ebankingbackend.dtos.AccountDto;
 import org.msd.ebankingbackend.dtos.CustomerDto;
 import org.msd.ebankingbackend.dtos.SavingAccountDto;
-import org.msd.ebankingbackend.exception.CustomerNotFoundException;
 import org.msd.ebankingbackend.services.AccountService;
 import org.msd.ebankingbackend.services.CustomerService;
 import org.springframework.boot.CommandLineRunner;
@@ -44,7 +44,7 @@ public class EbankingBackendApplication {
                     accountService.saveCurrentAccount(Math.random() * 90000, 9000, customer.getId());
                     accountService.saveSavingAccount(Math.random() * 120000, 5.5, customer.getId());
 
-                } catch (CustomerNotFoundException e) {
+                } catch (EntityNotFoundException e) {
                     e.toString();
                 }
             });

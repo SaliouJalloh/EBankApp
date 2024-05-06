@@ -1,15 +1,12 @@
 package org.msd.ebankingbackend.dtos;
 
+import lombok.*;
 import org.msd.ebankingbackend.enums.AccountStatus;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor @AllArgsConstructor
 public class AccountDto extends AbstractEntityDto{
 
