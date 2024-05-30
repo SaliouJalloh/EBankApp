@@ -1,8 +1,8 @@
 package org.msd.ebankingbackend.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.msd.ebankingbackend.dtos.*;
-import org.msd.ebankingbackend.exception.AccountNotFoundException;
 import org.msd.ebankingbackend.exception.BalanceNotSufficientException;
 import org.msd.ebankingbackend.services.AccountService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class AccountController {
     }
 
     @GetMapping(ID)
-    public ResponseEntity<AccountDto> getAccountByID(@PathVariable Long accountId) throws AccountNotFoundException {
+    public ResponseEntity<AccountDto> getAccountByID(@PathVariable Long accountId) throws EntityNotFoundException {
         return ResponseEntity.ok(accountService.findById(accountId));
     }
 
@@ -41,19 +41,19 @@ public class AccountController {
     }
 
     @PostMapping("/debit")
-    public DebitDto debit(@RequestBody DebitDto debitDto) throws AccountNotFoundException, BalanceNotSufficientException {
+    public DebitDto debit(@RequestBody DebitDto debitDto) throws EntityNotFoundException, BalanceNotSufficientException {
         this.accountService.debit(debitDto.getAccountId(), debitDto.getAmount(), debitDto.getDescription());
         return debitDto;
     }
 
     @PostMapping("/credit")
-    public CreditDto credit(@RequestBody CreditDto creditDto) throws AccountNotFoundException, BalanceNotSufficientException {
+    public CreditDto credit(@RequestBody CreditDto creditDto) throws EntityNotFoundException, BalanceNotSufficientException {
         this.accountService.credit(creditDto.getAccountId(), creditDto.getAmount(), creditDto.getDescription());
         return creditDto;
     }
 
     @PostMapping("/transfer")
-    public void transfer(@RequestBody TransferRequestDto transferRequestDto) throws AccountNotFoundException, BalanceNotSufficientException {
+    public void transfer(@RequestBody TransferRequestDto transferRequestDto) throws EntityNotFoundException, BalanceNotSufficientException {
         this.accountService.transfer(transferRequestDto.getAccountSource(), transferRequestDto.getAccountDestination(), transferRequestDto.getAmount());
     }
 
@@ -66,7 +66,7 @@ public class AccountController {
     public AccountHistoryDto getAccountHistory(
             @PathVariable Long accountId,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size) throws AccountNotFoundException {
+            @RequestParam(name = "size", defaultValue = "5") int size) throws EntityNotFoundException {
         return accountService.getAccountHistory(accountId, page, size);
     }
 

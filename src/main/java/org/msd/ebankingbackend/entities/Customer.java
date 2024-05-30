@@ -33,6 +33,9 @@ public class Customer extends AbstractEntity {
     @OneToMany(mappedBy = "customer")
     private List<Contact> contacts;
 
+    @OneToMany(mappedBy = "customer")
+    private List<Operation> operations;
+
     @OneToOne
     private Role role;
 }

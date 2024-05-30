@@ -1,17 +1,20 @@
 package org.msd.ebankingbackend.services;
 
+import org.msd.ebankingbackend.dtos.OperationSumDetails;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 
 public interface StatisticsService {
 
-  //List<TransactionSumDetails> findSumTractionsByDate(LocalDate startDate, LocalDate endDate, Integer userId);
+  List<OperationSumDetails> findSumOperationsByDate(LocalDate startDate, LocalDate endDate, Long customerId);
 
-  BigDecimal getAccountBalance(Integer userId);
+  BigDecimal getAccountBalance(Long customerId);
 
-  BigDecimal highestTransfer(Integer userId);
+  BigDecimal highestDebit(Long customerId);
 
-  BigDecimal highestDeposit(Integer userId);
+  BigDecimal highestCredit(Long customerId);
 
 }

@@ -25,6 +25,7 @@ public class Operation extends AbstractEntity {
 
     @ManyToOne
     private Account account;
-    
-    private String description;
+
+    @ManyToOne
+    private Customer customer;
 }

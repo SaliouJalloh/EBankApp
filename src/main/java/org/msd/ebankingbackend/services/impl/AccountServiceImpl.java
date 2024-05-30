@@ -9,8 +9,8 @@ import org.msd.ebankingbackend.dtos.*;
 import org.msd.ebankingbackend.entities.*;
 import org.msd.ebankingbackend.enums.AccountStatus;
 import org.msd.ebankingbackend.enums.OperationType;
-import org.msd.ebankingbackend.exception.AccountNotFoundException;
 import org.msd.ebankingbackend.exception.BalanceNotSufficientException;
+import org.msd.ebankingbackend.exception.OperationNonPermittedException;
 import org.msd.ebankingbackend.mappers.AccountMapper;
 import org.msd.ebankingbackend.mappers.CustomerMapper;
 import org.msd.ebankingbackend.mappers.OperationMapper;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl implements AccountService {
 
 	private final AccountRepository accountRepository;
 	private final CustomerRepository customerRepository;
@@ -43,8 +43,18 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public AccountDto save(AccountDto dto) {
 		validator.validateInput(dto);
+		boolean userHasAlreadyAnAccount = accountRepository.findByCustomerId(dto.getCustomerDto().getId()).isPresent();
+		if (userHasAlreadyAnAccount && dto.getCustomerDto().isActive()) {
+			throw new OperationNonPermittedException(
+					"the selected user has already an active account",
+					"Create account",
+					"Account service",
+					"Account creation"
+			);
+		}
 		if (dto instanceof CurrentAccountDto currentAccountDto) {
 			CurrentAccount currentAccount = accountMapper.fromCurrentAccountDto(currentAccountDto);
+
 			CurrentAccount savedAccount = accountRepository.save(currentAccount);
 			// generate random IBAN when creating new account else do not update the IBAN
 			if (dto.getId() == null) {
@@ -79,7 +89,7 @@ public class AccountServiceImpl implements AccountService{
 	public AccountDto findById(Long accountId) {
 		log.info("return a account");
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(()-> new AccountNotFoundException("BankAccount not found"));
+				.orElseThrow(()-> new EntityNotFoundException("BankAccount not found"));
 
 		if(account instanceof SavingAccount savingAccount){
 			return accountMapper.fromSavingAccount(savingAccount);
@@ -93,7 +103,7 @@ public class AccountServiceImpl implements AccountService{
 	public AccountDto updateAccount(AccountDto accountDto) {
 		log.info("Account Updated");
 		Account account = accountRepository.findById(accountDto.getId())
-				.orElseThrow(()-> new AccountNotFoundException("BankAccount not found"));
+				.orElseThrow(()-> new EntityNotFoundException("BankAccount not found"));
 
 		if(account instanceof CurrentAccount currentAccount){
 			accountMapper.fromCurrentAccount(currentAccount);
@@ -113,9 +123,9 @@ public class AccountServiceImpl implements AccountService{
 		accountRepository.deleteById(id);
 	}
 
-	private void initializeAccount(double initialBalance, AccountDto accountDto, CustomerDto customerDto) throws EntityNotFoundException {
+	private void initializeAccount(double initialBalance, AccountDto accountDto, CustomerDto customerDto) throws jakarta.persistence.EntityNotFoundException {
 		if(customerDto == null) {
-			throw new EntityNotFoundException("Customer not found");
+			throw new jakarta.persistence.EntityNotFoundException("Customer not found");
 		}
 		accountDto.setCreatedAt(LocalDateTime.now());
 		accountDto.setBalance(initialBalance);
@@ -129,7 +139,7 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void saveCurrentAccount(double initialBalance, double overDraft, Long customerId) throws EntityNotFoundException {
+	public void saveCurrentAccount(double initialBalance, double overDraft, Long customerId) throws jakarta.persistence.EntityNotFoundException {
 		Customer customer = customerRepository.findById(customerId).orElse(null);
 		CurrentAccountDto currentAccountDto = new CurrentAccountDto();
 		initializeAccount(initialBalance, currentAccountDto, customerMapper.fromCustomer(customer));
@@ -140,7 +150,7 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void saveSavingAccount(double initialBalance, double interestRate, Long customerId) throws EntityNotFoundException {
+	public void saveSavingAccount(double initialBalance, double interestRate, Long customerId) throws jakarta.persistence.EntityNotFoundException {
 		Customer customer = customerRepository.findById(customerId).orElse(null);
 		SavingAccountDto savingAccountDto = new SavingAccountDto();
 		initializeAccount(initialBalance, savingAccountDto, customerMapper.fromCustomer(customer));
@@ -150,40 +160,41 @@ public class AccountServiceImpl implements AccountService{
 		log.info("Saving_account saved");
 	}
 
-	private Operation initializeOperations(OperationType debit, double amount, String description, Account account) {
+	private Operation initializeOperations(OperationType debit, double amount, Account account, Customer customer) {
 		Operation operation = new Operation();
 		operation.setCreatedAt(LocalDateTime.now());
 		operation.setOperationDate(LocalDateTime.now());
 		operation.setType(debit);
 		operation.setAmount(amount);
-		operation.setDescription(description);
+		operation.setCustomer(customer);
 		operation.setAccount(account);
 		return operation;
 	}
 
 	@Override
-	public void debit(Long accountId, double amount, String description) throws AccountNotFoundException, BalanceNotSufficientException {
+	public void debit(Long accountId, double amount, String description) throws EntityNotFoundException, BalanceNotSufficientException {
 
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new AccountNotFoundException("BankAccount not found"));
+				.orElseThrow(() -> new EntityNotFoundException("BankAccount not found"));
 
 		if(account.getBalance() < amount){
 			throw new BalanceNotSufficientException("Balance not sufficient");
 		}
-		Operation operation = initializeOperations(OperationType.DEBIT, amount, description, account);
+		Customer customer = account.getCustomer();
+		Operation operation = initializeOperations(OperationType.DEBIT, amount, account, customer);
 		account.setBalance(account.getBalance()-amount);
-		accountRepository.save(account);
 		operationRepository.save(operation);
+		accountRepository.save(account);
 	}
 
 	@Override
-	public void credit(Long accountId, double amount, String description) throws AccountNotFoundException {
+	public void credit(Long accountId, double amount, String description) throws EntityNotFoundException {
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(()->new AccountNotFoundException("BankAccount not found"));
-
-		Operation operation = initializeOperations(OperationType.CREDIT, amount, description, account);
-		operationRepository.save(operation);
+				.orElseThrow(() -> new EntityNotFoundException("BankAccount not found"));
+		Customer customer = account.getCustomer();
+		Operation operation = initializeOperations(OperationType.CREDIT, amount, account, customer);
 		account.setBalance(account.getBalance()+amount);
+		operationRepository.save(operation);
 		accountRepository.save(account);
 	}
 
@@ -200,10 +211,10 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public AccountHistoryDto getAccountHistory(Long accountId, int page, int size) throws AccountNotFoundException {
+	public AccountHistoryDto getAccountHistory(Long accountId, int page, int size) throws EntityNotFoundException {
 		Account account = accountRepository.findById(accountId).orElse(null);
 		if(account == null){
-			throw new AccountNotFoundException("Account not Found");
+			throw new EntityNotFoundException("Account not Found");
 		}
 		Page<Operation> operations = operationRepository.findByAccountIdOrderByOperationDateDesc(accountId, PageRequest.of(page, size));
 		AccountHistoryDto accountHistoryDto = new AccountHistoryDto();

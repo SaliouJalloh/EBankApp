@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.msd.ebankingbackend.exception.handlers.ErrorHandlingControllerAdvice;
-import org.msd.ebankingbackend.exception.handlers.ErrorResponse;
+import org.msd.ebankingbackend.handlers.ErrorResponse;
+import org.msd.ebankingbackend.handlers.GlobalExceptionHandler;
 import org.msd.ebankingbackend.utility.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +26,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class GlobalExceptionHandlerTest {
     
 	@InjectMocks
-    private ErrorHandlingControllerAdvice globalExceptionHandler;
+    private GlobalExceptionHandler globalExceptionHandler;
     //private ErrorResponse errorResponse;
 
     @Autowired

@@ -1,4 +1,4 @@
-package org.msd.ebankingbackend.exception.handlers;
+package org.msd.ebankingbackend.handlers;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

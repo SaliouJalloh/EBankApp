@@ -10,8 +10,10 @@ import org.msd.ebankingbackend.dtos.AccountDto;
 import org.msd.ebankingbackend.dtos.CustomerDto;
 import org.msd.ebankingbackend.entities.Account;
 import org.msd.ebankingbackend.entities.Customer;
+import org.msd.ebankingbackend.entities.Role;
 import org.msd.ebankingbackend.mappers.CustomerMapper;
 import org.msd.ebankingbackend.repositories.CustomerRepository;
+import org.msd.ebankingbackend.repositories.RoleRepository;
 import org.msd.ebankingbackend.services.AccountService;
 import org.msd.ebankingbackend.services.CustomerService;
 import org.msd.ebankingbackend.validators.EntityValidatorService;
@@ -29,6 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
 	private final CustomerMapper customerMapper;
 	private final AccountService accountService;
 	private final EntityValidatorService<CustomerDto> validator;
+	private final RoleRepository roleRepository;
 
 	@Override
 	public CustomerDto save(CustomerDto customerDto) {
@@ -67,34 +70,43 @@ public class CustomerServiceImpl implements CustomerService {
 		customerRepository.deleteById(customerId);
 	}
 
-	/**
-	 * @param id
-	 * @return
-	 */
 	@Override
-	public Integer validateAccount(Long id) {
-		Customer customer = customerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("No Customer was found for customer account validation"));
+	public Long validateAccount(Long id) {
+		Customer customer = customerRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("No Customer was found for customer account validation"));
 		if(customer.getAccounts().isEmpty()){
 			// Create a bank account
 			AccountDto accountDto = AccountDto.builder()
 					.customerDto(customerMapper.fromCustomer(customer)).build();
-			var savedAccount = accountService.save(accountDto);
-			customer.setAccounts((List<Account>) (Account.builder()
-					.id(savedAccount.getId())
-					).build()
+			AccountDto savedAccount = accountService.save(accountDto);
+			customer.setAccounts(
+                    (List<Account>) Account.builder()
+                    .id(savedAccount.getId())
+                    .build()
             );
-			throw new EntityNotFoundException("No Account was found for customer account validation");
 		}
-		return 0;
+		customer.setActive(true);
+		customerRepository.save(customer);
+		return customer.getId();
 	}
 
-	/**
-	 * @param id
-	 * @return
-	 */
 	@Override
-	public Integer invalidateAccount(Long id) {
-		return 0;
+	public Long invalidateAccount(Long id) {
+		Customer customer = customerRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("No Customer was found for customer account invalidation"));
+		customer.setActive(false);
+		customerRepository.save(customer);
+		return customer.getId();
+	}
+
+	private Role findOrCreateRole(String roleName){
+		Role role = roleRepository.findByName(roleName);
+		if(role == null){
+			return roleRepository.save(Role.builder()
+					.name(roleName)
+					.build());
+		}
+		return role;
 	}
 
 	/*@Override

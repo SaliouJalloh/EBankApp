@@ -1,4 +1,4 @@
-package org.msd.ebankingbackend.exception.handlers;
+package org.msd.ebankingbackend.handlers;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Getter
 @Builder
-//@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExceptionRepresentation {
 

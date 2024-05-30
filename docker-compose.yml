@@ -2,32 +2,40 @@ version: '3.9'
 
 services:
 
-  #old service (postgres)
-  db:
+  # PostgreSQL Database
+  postgres:
     container_name: app_db
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
+    image: postgres:latest
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: passroot
-      POSTGRES_DB: ebank
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passroot}
+      POSTGRES_DB: ${POSTGRES_DB:-ebank}
+      PGDATA: /var/lib/postgresql/data
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres:/data/postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
 
-  #new service (java_app)
+  # Spring Boot Application
   app:
     container_name: app_main
     image: bank/app_main:1.0.0
     build: .
-    ports:
-      - "8085:8085"
     depends_on:
-      - db
+      - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ebank
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ebank
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: passroot
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+networks:
+  postgres:
+    driver: bridge
 volumes:
-  postgres-data: {}
+  postgres:
+    driver: local

@@ -3,9 +3,8 @@ package org.msd.ebankingbackend.services;
 import org.msd.ebankingbackend.dtos.CustomerDto;
 
 public interface CustomerService extends AbstractService<CustomerDto> {
-		//List<CustomerDto> searchCustomers(Long keyword);
+	Long validateAccount(Long id);
+	Long invalidateAccount(Long id);
 	CustomerDto updateCustomer(CustomerDto customerDto);
-	Integer validateAccount(Long id);
-
-	Integer invalidateAccount(Long id);
+	//List<CustomerDto> searchCustomers(Long keyword);
 }

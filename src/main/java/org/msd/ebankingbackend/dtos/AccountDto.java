@@ -6,7 +6,7 @@ import org.msd.ebankingbackend.enums.AccountStatus;
 import lombok.experimental.SuperBuilder;
 
 @Getter @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor @AllArgsConstructor
 public class AccountDto extends AbstractEntityDto{
 
