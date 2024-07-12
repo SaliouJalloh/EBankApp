@@ -36,6 +36,7 @@ public class EbankingBackendApplication {
                 CustomerDto customerDto = new CustomerDto();
                 customerDto.setFirstName(name);
                 customerDto.setEmail(name + "@gmail.com");
+                customerDto.setPassword("1234567890");
                 customerService.save(customerDto);
             });
             // Pour chaque client, on lui crée les 2 types de comptes

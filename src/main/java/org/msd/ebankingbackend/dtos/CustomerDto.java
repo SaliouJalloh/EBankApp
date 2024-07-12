@@ -28,10 +28,10 @@ public class CustomerDto extends AbstractEntityDto{
     @Email(message = "L'email n'est pas conforme")
     private String email;
 
-    /*@NotNull(message = "Le mot de passe ne doit pas etre vide")
+    @NotNull(message = "Le mot de passe ne doit pas etre vide")
     @NotEmpty(message = "Le mot de passe ne doit pas etre vide")
     @NotBlank(message = "Le mot de passe ne doit pas etre vide")
-    @Size(min = 8, max = 16, message = "Le mot de passe doit etre entre 8 et 16 caracteres")*/
+    @Size(min = 8, max = 16, message = "Le mot de passe doit etre entre 8 et 16 caracteres")
     private String password;
 
     private String iban;

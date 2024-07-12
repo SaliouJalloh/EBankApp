@@ -14,6 +14,7 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
 server:
   port: 8085

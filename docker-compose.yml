@@ -5,16 +5,16 @@ services:
   # PostgreSQL Database
   postgres:
     container_name: app_db
-    image: postgres:latest
+    image: postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passroot}
-      POSTGRES_DB: ${POSTGRES_DB:-ebank}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passroot
+      POSTGRES_DB: ebank
       PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres:/data/postgres
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
     networks:
       - postgres
     restart: unless-stopped
@@ -23,7 +23,7 @@ services:
   app:
     container_name: app_main
     image: bank/app_main:1.0.0
-    build: .
+    build: . # Dockerfile
     depends_on:
       - postgres
     environment:
@@ -32,7 +32,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: passroot
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
-      - "8080:8080"
+      - "8085:8080"
+    restart: unless-stopped
+
 networks:
   postgres:
     driver: bridge

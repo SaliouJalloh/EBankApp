@@ -22,7 +22,7 @@ public class Account extends AbstractEntity {
 
     private double balance;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private AccountStatus status;
     
     private String currency;
