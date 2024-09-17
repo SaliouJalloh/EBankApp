@@ -39,7 +39,6 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((request) -> {
-
                     request.requestMatchers(
                                     "/**/authenticate",
                                     "/**/register",
@@ -60,13 +59,8 @@ public class SecurityConfig {
                             .permitAll()
                             .anyRequest()
                             .authenticated();
-                            //.and()
-                            //.sessionManagement()
-                            //.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
                 }   ).authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-                //.cors();
         return http.build();
     }
 

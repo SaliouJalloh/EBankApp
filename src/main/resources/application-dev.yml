@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ebank
     username: postgres
-    password: passroot
+    password: test
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
