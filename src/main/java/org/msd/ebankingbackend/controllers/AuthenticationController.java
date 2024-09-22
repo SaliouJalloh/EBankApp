@@ -1,30 +1,39 @@
 package org.msd.ebankingbackend.controllers;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.msd.ebankingbackend.dtos.AuthenticationRequest;
-import org.msd.ebankingbackend.dtos.AuthenticationResponse;
-import org.msd.ebankingbackend.dtos.CustomerDto;
-import org.msd.ebankingbackend.services.CustomerService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.msd.ebankingbackend.controllers.dtos.AuthenticationRequestDto;
+import org.msd.ebankingbackend.controllers.dtos.AuthenticationResponseDto;
+import org.msd.ebankingbackend.controllers.dtos.CustomerDto;
+import org.msd.ebankingbackend.controllers.mappers.IControllerMapper;
+import org.msd.ebankingbackend.services.auth.IAuthentication;
+import org.msd.ebankingbackend.services.dtos.AuthenticationRequest;
+import org.msd.ebankingbackend.services.dtos.AuthenticationResponse;
+import org.msd.ebankingbackend.storage.models.Customer;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final CustomerService customerService;
+    private final IControllerMapper controllerMapper;
+    private final IAuthentication authentication;
 
-    @RequestMapping("/register ")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody CustomerDto customerDto) {
-        return ResponseEntity.ok(customerService.register(customerDto));
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthenticationResponseDto register(@Valid @RequestBody CustomerDto customerDto) {
+        Customer customer = controllerMapper.toCustomer(customerDto);
+        AuthenticationResponse authenticationResponse = authentication.register(customer);
+        return controllerMapper.toAuthenticationDto(authenticationResponse);
     }
 
-    @RequestMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-        return ResponseEntity.ok(customerService.authenticate(authenticationRequest));
+    @PostMapping("/authenticate")
+    public AuthenticationResponseDto authenticate(@Valid @RequestBody AuthenticationRequestDto authenticationRequestDto) {
+        AuthenticationRequest request = controllerMapper.toAuthenticationRequest(authenticationRequestDto);
+        AuthenticationResponse authenticate = authentication.authenticate(request);
+        return controllerMapper.toAuthenticationDto(authenticate);
     }
 }

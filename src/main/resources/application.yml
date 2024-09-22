@@ -1,13 +1,13 @@
 spring:
-  main:
-    web-application-type: none
-  profiles:
-    active: dev
-  servlet:
-    multipart:
-      max-file-size: 50MB
-springdoc:
-  default-produces-media-type: application/json
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ebank
+    username: postgres
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 server:
-  servlet:
-    context-path: /api/v1/
+  port: 8085

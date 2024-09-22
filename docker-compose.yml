@@ -6,7 +6,7 @@ services:
     image: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: passroot
+      POSTGRES_PASSWORD: test
       POSTGRES_DB: ebank
       PGDATA: /var/lib/postgresql/data
       SERVICE_TAGS: prod
@@ -20,7 +20,7 @@ services:
     networks:
       - postgresNetwork
     restart: unless-stopped
-# Spring Boot Application
+  # Spring Boot Application
   application:
     container_name: app_container
     image: ebanking:v1
@@ -32,7 +32,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ebank
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: passroot
+      SPRING_DATASOURCE_PASSWORD: test
       SERVICE_TAGS: prod
       SERVICE_NAME: bankApi
     ports:

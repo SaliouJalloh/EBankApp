@@ -1,16 +1,12 @@
 package org.msd.ebankingbackend.services;
 
-import org.msd.ebankingbackend.dtos.AuthenticationRequest;
-import org.msd.ebankingbackend.dtos.AuthenticationResponse;
-import org.msd.ebankingbackend.dtos.CustomerDto;
+import org.msd.ebankingbackend.storage.models.Customer;
 
-public interface CustomerService extends AbstractService<CustomerDto> {
-	Long validateAccount(Long id);
-	Long invalidateAccount(Long id);
-	CustomerDto updateCustomer(CustomerDto customerDto);
+public interface CustomerService {
 
-    AuthenticationResponse register(CustomerDto customerDto);
+    Customer saveCustomer(Customer customer);
 
-	AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest);
-	//List<CustomerDto> searchCustomers(Long keyword);
+    Customer findCustomerByEmail(String email);
+
+    Customer findCustomerById(Long id);
 }

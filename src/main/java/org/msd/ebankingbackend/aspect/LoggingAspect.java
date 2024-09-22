@@ -12,6 +12,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class LoggingAspect {
 
+    private static void logMetric(String serviceName, String methodeName, String metric) {
+        String logMetric = createLogMetricMessage(serviceName, methodeName, metric);
+        logMetric(logMetric);
+    }
+
+    private static void logMetric(String logMetric) {
+        LoggingAspect.log.info(logMetric);
+    }
+
+    private static String createLogMetricMessage(String serviceName, String methodeName, String metric) {
+        return String.join("", "[", serviceName, "]", "[", methodeName, "]: ", metric);
+    }
+
     @Around("execution(* org.msd.ebankingbackend..*(..))")
     public Object logAroundMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -27,19 +40,5 @@ public class LoggingAspect {
         } finally {
             LoggingAspect.logMetric(className, methodName, metric);
         }
-    }
-
-
-    private static void logMetric(String serviceName, String methodeName, String metric) {
-        String logMetric = createLogMetricMessage(serviceName, methodeName, metric);
-        logMetric(logMetric);
-    }
-
-    private static void logMetric(String logMetric) {
-        LoggingAspect.log.info(logMetric);
-    }
-
-    private static String createLogMetricMessage(String serviceName, String methodeName, String metric) {
-        return String.join("", "[", serviceName, "]", "[", methodeName, "]: ", metric);
     }
 }
