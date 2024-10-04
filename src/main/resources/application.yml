@@ -1,13 +1,43 @@
 spring:
+  profiles:
+    active: ${ENV:dev}
+  application:
+    name: api
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/ebank
-    username: postgres
-    password: test
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-server:
-  port: 8085
+  servlet:
+    multipart:
+      max-file-size: 50MB
+cors:
+  allowed-origins: ${ORIGINS}
+  allowed-methods: ${METHODS}
+  allowed-headers: ${ALLOWED_HEADERS}
+  exposed-headers: ${EXPOSED_HEADERS}
+  allow-credentials: ${CREDENTIALS}
+  max-age: ${MAX_AGE}
+
+springdoc:
+  default-produces-media-type: application/json
+
+application:
+  apiName: api
+  apiVersion: v1
+  frontend:
+    basePath: ${FRONTEND_URL}
+  backend:
+    basePath: ${BACKEND_URL}
+  security:
+    jwt:
+      secret-key: ${TOKEN_SECRET}
+      expiration: ${TOKEN_VALIDITY}
+
+logging:
+  level:
+    root: INFO

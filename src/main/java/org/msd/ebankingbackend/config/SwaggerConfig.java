@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-    //@Value("${application.backend.basePath}")
+    @Value("${application.backend.basePath}")
     private String backendUrl;
 
     @Bean
@@ -40,7 +41,7 @@ public class SwaggerConfig {
 
     private List<Server> servers() {
         Server server = new Server();
-        server.url("http://localhost:8085");
+        server.url(backendUrl);
         return List.of(server);
     }
 }

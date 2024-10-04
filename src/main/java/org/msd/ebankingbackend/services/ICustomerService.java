@@ -2,7 +2,7 @@ package org.msd.ebankingbackend.services;
 
 import org.msd.ebankingbackend.storage.models.Customer;
 
-public interface CustomerService {
+public interface ICustomerService {
 
     Customer saveCustomer(Customer customer);
 

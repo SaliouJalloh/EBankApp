@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
-public class AccountAlreadyExistsException extends RuntimeException {
+public class UsernameAlreadyExistsException extends RuntimeException {
 
-    public AccountAlreadyExistsException(String message){
+    public UsernameAlreadyExistsException(String message) {
         super(message);
     }
 }

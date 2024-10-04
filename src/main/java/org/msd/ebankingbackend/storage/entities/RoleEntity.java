@@ -1,26 +1,28 @@
 package org.msd.ebankingbackend.storage.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.security.core.GrantedAuthority;
+import org.msd.ebankingbackend.storage.enums.RoleName;
 
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "role")
-public class RoleEntity extends AbstractEntity implements GrantedAuthority {
-
-    private String authority;
-
-    private String name;
+@Entity(name = "roles")
+public class RoleEntity extends AbstractEntity {
 
     @OneToOne
     private CustomerEntity customer;
+
+    @Column(unique = true, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RoleName name;
+
+    private String description;
+
 }

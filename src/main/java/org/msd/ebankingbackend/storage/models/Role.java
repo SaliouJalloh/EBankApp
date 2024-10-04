@@ -5,17 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.security.core.GrantedAuthority;
 
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role extends AbstractModel implements GrantedAuthority {
+public class Role extends AbstractModel {
 
     private String name;
-
     private Customer customer;
-    private String authority;
 }

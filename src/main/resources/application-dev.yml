@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ebank
+    username: postgres
+    password: test
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 8085
+
+application:
+  backend:
+    basePath: http://localhost:8085
+  frontend:
+    basePath: http://localhost:4200
+  security:
+    jwt:
+      secret-key: 586B633834416E396D7436753879382F423F4428482B4C6250655367566B5970
+      expiration: 86400000 # a day
+
+cors:
+  allowed-origins: "${application.frontend.basePath}"
+  allowed-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  allowed-headers: "Origin, Access-Control-Allow-Origin, Content-Type,
+                         Accept, Jwt-Token, Authorization, Origin, Accept, X-Requested-With,
+                         Access-Control-Request-Method, Access-Control-Request-Headers"
+  exposed-headers: "Origin, Content-Type, Accept, Jwt-Token, Authorization,
+                         Access-Control-Allow-Origin, Access-Control-Allow-Origin, Access-Control-Allow-Credentials"
+  allow-credentials: true
+  max-age: 3600

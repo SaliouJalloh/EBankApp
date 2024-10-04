@@ -37,13 +37,17 @@ public class Customer extends AbstractModel implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        //return List.of(new SimpleGrantedAuthority(role.getName()));
-        return List.of(role);
+        return role.getCustomer().getAuthorities();
     }
 
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override

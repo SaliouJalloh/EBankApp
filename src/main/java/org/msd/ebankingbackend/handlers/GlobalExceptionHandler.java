@@ -2,6 +2,7 @@ package org.msd.ebankingbackend.handlers;
 
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.msd.ebankingbackend.exception.EntityValidationException;
 import org.msd.ebankingbackend.exception.OperationNonPermittedException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,8 +13,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
@@ -59,7 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ExceptionRepresentation> handleException(DataIntegrityViolationException exception) {
         ExceptionRepresentation representation = ExceptionRepresentation.builder()
-                .errorMessage("A customer already exists with the provided Email")
+                .errorMessage(exception.getMessage())
                 .build();
         log.error(exception.getMessage(), exception);
         return ResponseEntity
