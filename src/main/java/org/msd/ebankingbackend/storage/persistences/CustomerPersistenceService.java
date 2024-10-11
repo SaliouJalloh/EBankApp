@@ -3,7 +3,7 @@ package org.msd.ebankingbackend.storage.persistences;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.msd.ebankingbackend.services.payload.request.RegisterRequest;
+import org.msd.ebankingbackend.service.payload.request.RegisterRequest;
 import org.msd.ebankingbackend.storage.entities.CustomerEntity;
 import org.msd.ebankingbackend.storage.entities.RoleEntity;
 import org.msd.ebankingbackend.storage.mappers.ICustomerPersistenceMapper;

@@ -1,17 +1,12 @@
 spring:
   profiles:
-    active: ${ENV:dev}
+    active: @spring.profiles.active@
   application:
     name: api
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: create
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
       max-file-size: 50MB

@@ -1,6 +1,6 @@
 package org.msd.ebankingbackend.storage.persistences;
 
-import org.msd.ebankingbackend.services.payload.request.RegisterRequest;
+import org.msd.ebankingbackend.service.payload.request.RegisterRequest;
 import org.msd.ebankingbackend.storage.models.Customer;
 
 import java.util.List;

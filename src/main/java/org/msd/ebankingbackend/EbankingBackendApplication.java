@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import static java.util.Arrays.asList;
 import static org.msd.ebankingbackend.storage.enums.RoleName.ADMIN;
 import static org.msd.ebankingbackend.storage.enums.RoleName.USER;
 
@@ -24,16 +25,15 @@ public class EbankingBackendApplication {
     }
 
     @Bean
-    public CommandLineRunner init() {
+    public CommandLineRunner run() {
         return args -> {
-            RoleEntity role1 = RoleEntity.builder()
+            RoleEntity roleUser = RoleEntity.builder()
                     .name(USER)
                     .build();
-            roleRepository.save(role1);
-            RoleEntity role2 = RoleEntity.builder()
+            RoleEntity roleAdmin = RoleEntity.builder()
                     .name(ADMIN)
                     .build();
-            roleRepository.save(role2);
+            roleRepository.saveAll(asList(roleUser, roleAdmin));
         };
     }
 }

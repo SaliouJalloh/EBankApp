@@ -1,6 +1,9 @@
 package org.msd.ebankingbackend.storage.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +18,6 @@ import org.msd.ebankingbackend.storage.enums.RoleName;
 @AllArgsConstructor
 @Entity(name = "roles")
 public class RoleEntity extends AbstractEntity {
-
-    @OneToOne
-    private CustomerEntity customer;
 
     @Column(unique = true, nullable = false)
     @Enumerated(EnumType.STRING)

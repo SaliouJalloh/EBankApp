@@ -184,7 +184,7 @@
     </build>
     <profiles>
         <profile>
-            <id>dev-local</id>
+            <id>dev</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>

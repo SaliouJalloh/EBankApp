@@ -22,6 +22,7 @@ public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
     private Long id;
 
     @CreatedDate
@@ -29,5 +30,6 @@ public abstract class AbstractEntity {
     private Date createdAt;
 
     @LastModifiedDate
+    @Column(nullable = false, updatable = false)
     private Date lastModifiedDate;
 }

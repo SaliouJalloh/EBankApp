@@ -12,6 +12,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.ALL;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -41,7 +43,7 @@ public class CustomerEntity extends AbstractEntity {
     @OneToMany(mappedBy = "customer")
     private List<OperationEntity> operations;
 
-    @OneToOne
+    @OneToOne(cascade = ALL)
     private RoleEntity role;
 
 }

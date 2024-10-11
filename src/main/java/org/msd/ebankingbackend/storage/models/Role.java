@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.msd.ebankingbackend.storage.enums.RoleName;
 
 @Getter
 @Setter
@@ -13,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Role extends AbstractModel {
 
-    private String name;
+    private RoleName name;
     private Customer customer;
+    private String description;
 }

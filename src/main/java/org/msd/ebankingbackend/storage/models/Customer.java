@@ -1,5 +1,6 @@
 package org.msd.ebankingbackend.storage.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 
 @Getter
 @Setter
@@ -22,7 +25,10 @@ public class Customer extends AbstractModel implements UserDetails {
     private String lastName;
 
     private String email;
+
+    @JsonProperty(access = WRITE_ONLY)
     private String password;
+    
     private boolean active;
 
     private Address address;

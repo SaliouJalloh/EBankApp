@@ -1,16 +1,25 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ebank
-    username: postgres
-    password: test
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:test}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: create
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1000MB
+      max-request-size: 1000MB
 server:
-  port: 8085
+  port: ${SERVER_PORT:8085}
+  error:
+    include-path: always
+    whitelabel:
+      enabled: false
 
 application:
   backend:
@@ -20,7 +29,7 @@ application:
   security:
     jwt:
       secret-key: 586B633834416E396D7436753879382F423F4428482B4C6250655367566B5970
-      expiration: 86400000 # a day
+      expiration: 86400000
 
 cors:
   allowed-origins: "${application.frontend.basePath}"
