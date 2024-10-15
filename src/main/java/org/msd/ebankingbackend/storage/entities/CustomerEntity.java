@@ -1,9 +1,6 @@
 package org.msd.ebankingbackend.storage.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +24,13 @@ public class CustomerEntity extends AbstractEntity {
 
     @Column(unique = true, nullable = false)
     private String email;
+
     private String password;
 
     private boolean active;
+
+    @ManyToOne(cascade = ALL)
+    private RoleEntity role;
 
     @OneToOne
     private AddressEntity address;
@@ -43,7 +44,5 @@ public class CustomerEntity extends AbstractEntity {
     @OneToMany(mappedBy = "customer")
     private List<OperationEntity> operations;
 
-    @OneToOne(cascade = ALL)
-    private RoleEntity role;
 
 }

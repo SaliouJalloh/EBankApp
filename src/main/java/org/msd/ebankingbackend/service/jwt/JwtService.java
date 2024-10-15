@@ -5,9 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import java.security.Key;
 import java.util.Date;
@@ -23,6 +27,9 @@ public class JwtService implements IJwtService {
 
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
+
+    @Value("${application.security.jwt.cookie-name}")
+    private String jwtCookieName;
 
     @Override
     public String extractUsername(String token) {
@@ -79,5 +86,29 @@ public class JwtService implements IJwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    @Override
+    public ResponseCookie generateJwtCookie(String jwt) {
+        return ResponseCookie.from(jwtCookieName, jwt)
+                .path("/")
+                .maxAge(24 * 60 * 60) // 24 hours in s
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .build();
+    }
+
+    @Override
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
+        return cookie != null ? cookie.getValue() : null;
+    }
+
+    @Override
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from(jwtCookieName, "")
+                .path("/")
+                .build();
     }
 }
