@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ public abstract class AbstractModel {
 
     private Long id;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date lastModifiedDate;
+    private LocalDateTime lastModifiedDate;
 }
