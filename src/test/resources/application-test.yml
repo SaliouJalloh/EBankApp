@@ -1,0 +1,49 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+      hibernate:
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.H2Dialect
+          format_sql: true
+    show-sql: true
+  datasource:
+    url: jdbc:h2:mem:test;INIT=create domain if not exists jsons as text;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    initialize: true
+  liquibase:
+    default-schema: public
+  # Hibernate Configuration for H2
+  sql:
+    init:
+      platform: h2
+      mode: always
+
+server:
+  port: 8085
+
+application:
+  frontend:
+    basePath: http://localhost:4200
+  backend:
+    basePath: http://localhost:8085
+  security:
+    jwt:
+      secret-key: 586B633834416E396D7436753879382F423F4428482B4C6250655367566B5970
+      expiration: 86400000
+      cookie-name: jwt-cookie
+
+cors:
+  allowed-origins: "${application.frontend.basePath}"
+  allowed-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  allowed-headers: "Origin, Access-Control-Allow-Origin, Content-Type,
+                         Accept, Jwt-Token, Authorization, Origin, Accept, X-Requested-With,
+                         Access-Control-Request-Method, Access-Control-Request-Headers"
+  exposed-headers: "Origin, Content-Type, Accept, Jwt-Token, Authorization,
+                         Access-Control-Allow-Origin, Access-Control-Allow-Origin, Access-Control-Allow-Credentials"
+  allow-credentials: true
+  max-age: 3600
